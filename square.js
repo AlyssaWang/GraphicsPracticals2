@@ -68,6 +68,19 @@ function main() {
 
   // Draw the scene
   drawScene(gl, programInfo, buffers);
+
+  // Animation
+  var then = 0;
+
+  // Draw the scene repeatedly
+  function render(now) {
+    now *= 0.001;  // convert to seconds
+    const deltaTime = now - then;
+    then = now;
+    drawScene(gl, programInfo, buffers, deltaTime);
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
 }
 
 function initBuffers(gl) {
@@ -108,7 +121,7 @@ function initBuffers(gl) {
   };
 }
 
-function drawScene(gl, programInfo, buffers) {
+function drawScene(gl, programInfo, buffers, deltaTime) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -149,6 +162,11 @@ function drawScene(gl, programInfo, buffers) {
   mat4.translate(modelViewMatrix,     // destination matrix
                  modelViewMatrix,     // matrix to translate
                  [-0.0, 0.0, -6.0]);  // amount to translate
+
+  mat4.rotate(modelViewMatrix,  // destination matrix
+              modelViewMatrix,  // matrix to rotate
+              squareRotation,   // amount to rotate in radians
+              [0, 0, 1]);       // axis to rotate around
 
   // Tell WebGL how to pull out the positions from the position
   // buffer into the vertexPosition attribute.
@@ -191,11 +209,9 @@ function drawScene(gl, programInfo, buffers) {
   }
 
   // Tell WebGL to use our program when drawing
-
   gl.useProgram(programInfo.program);
 
   // Set the shader uniforms
-
   gl.uniformMatrix4fv(
       programInfo.uniformLocations.projectionMatrix,
       false,
@@ -210,6 +226,8 @@ function drawScene(gl, programInfo, buffers) {
     const vertexCount = 4;
     gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
   }
+
+  squareRotation += deltaTime;
 }
 
 function initShaderProgram(gl, vsSource, fsSource) {
