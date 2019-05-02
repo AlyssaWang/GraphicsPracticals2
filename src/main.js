@@ -3,6 +3,8 @@ import {positions,
         indices,
         vertexNormals} from './constants.js';
 
+import {vsSource, fsSource} from './shaderPrograms.js';
+
 import {drawScene} from './drawScene.js';
 import {initBuffers} from './initBuffers.js';
 import {initShaderProgram} from './initShaderProgram.js';
@@ -19,27 +21,6 @@ function main() {
     return;
   }
 
-  // Vertex shader program
-  const vsSource = `
-    attribute vec4 aVertexPosition;
-    attribute vec4 aVertexColor;
-    uniform mat4 uModelViewMatrix;
-    uniform mat4 uProjectionMatrix;
-    varying lowp vec4 vColor;
-    void main(void) {
-      gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-      vColor = aVertexColor;
-    }
-  `;
-
-  // Fragment shader program
-  const fsSource = `
-    varying lowp vec4 vColor;
-    void main(void) {
-      gl_FragColor = vColor;
-    }
-  `;
-
   // Initialize a shader program; this is where all the lighting
   // for the vertices and so forth is established.
   const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
@@ -52,16 +33,17 @@ function main() {
     program: shaderProgram,
     attribLocations: {
       vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+      vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
       vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
     },
     uniformLocations: {
       projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
       modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+      normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
+      uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
     },
   };
 
-  // Here's where we call the routine that builds all the
-  // objects we'll be drawing.
   const buffers = initBuffers(gl);
 
   var then = 0;
@@ -71,9 +53,7 @@ function main() {
     now *= 0.001;  // convert to seconds
     const deltaTime = now - then;
     then = now;
-
     drawScene(gl, programInfo, buffers, deltaTime);
-
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);

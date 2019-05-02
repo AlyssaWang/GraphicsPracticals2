@@ -9,12 +9,10 @@ export function drawScene(gl, programInfo, buffers, deltaTime) {
   // Clear the canvas before we start drawing on it.
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  // Create a perspective matrix, a special matrix that is
-  // used to simulate the distortion of perspective in a camera.
-  // Our field of view is 45 degrees, with a width/height
-  // ratio that matches the display size of the canvas
-  // and we only want to see objects between 0.1 units
-  // and 100 units away from the camera.
+  // Create a perspective matrix to simulate the distortion of perspective in a
+  // camera. Our field of view is 45 degrees, with a width/height ratio that
+  // matches the display size of the canvas and we only want to see objects
+  // between 0.1 units and 100 units away from the camera.
   const fieldOfView = 45 * Math.PI / 180;   // in radians
   const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
   const zNear = 0.1;
@@ -48,11 +46,11 @@ export function drawScene(gl, programInfo, buffers, deltaTime) {
               [0, 1, 0]);             // axis to rotate around (X)
 
   // Deliver normal matrix to shader
-  // const normalMatrix = mat4.create();
-  // mat4.invert(normalMatrix,
-  //             modelViewMatrix);
-  // mat4.transpose(normalMatrix,
-  //                normalMatrix);
+  const normalMatrix = mat4.create();
+  mat4.invert(normalMatrix,
+              modelViewMatrix);
+  mat4.transpose(normalMatrix,
+                 normalMatrix);
 
   // Tell WebGL how to pull out the positions from the position
   // buffer into the vertexPosition attribute
@@ -96,23 +94,23 @@ export function drawScene(gl, programInfo, buffers, deltaTime) {
 
   // Tell WebGL how to pull out the normals from
   // the normal buffer into the vertexNormal attribute.
-  // {
-  //   const numComponents = 3;
-  //   const type = gl.FLOAT;
-  //   const normalize = false;
-  //   const stride = 0;
-  //   const offset = 0;
-  //   gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normal);
-  //   gl.vertexAttribPointer(
-  //       programInfo.attribLocations.vertexNormal,
-  //       numComponents,
-  //       type,
-  //       normalize,
-  //       stride,
-  //       offset);
-  //   gl.enableVertexAttribArray(
-  //       programInfo.attribLocations.vertexNormal);
-  // }
+  {
+    const numComponents = 3;
+    const type = gl.FLOAT;
+    const normalize = false;
+    const stride = 0;
+    const offset = 0;
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normal);
+    gl.vertexAttribPointer(
+        programInfo.attribLocations.vertexNormal,
+        numComponents,
+        type,
+        normalize,
+        stride,
+        offset);
+    gl.enableVertexAttribArray(
+        programInfo.attribLocations.vertexNormal);
+  }
 
   // Tell WebGL which indices to use to index the vertices
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
@@ -129,10 +127,10 @@ export function drawScene(gl, programInfo, buffers, deltaTime) {
       programInfo.uniformLocations.modelViewMatrix,
       false,
       modelViewMatrix);
-  // gl.uniformMatrix4fv(
-  //     programInfo.uniformLocations.normalMatrix,
-  //     false,
-  //     normalMatrix);
+  gl.uniformMatrix4fv(
+      programInfo.uniformLocations.normalMatrix,
+      false,
+      normalMatrix);
 
   {
     const vertexCount = 36;

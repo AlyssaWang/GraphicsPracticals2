@@ -100,6 +100,48 @@
     -1.0,  0.0,  0.0
   ];
 
+  // Vertex shader program
+  const vsSource = `
+  attribute vec4 aVertexPosition;
+  attribute vec4 aVertexColor;
+  attribute vec3 aVertexNormal;
+
+  uniform mat4 uNormalMatrix;
+  uniform mat4 uModelViewMatrix;
+  uniform mat4 uProjectionMatrix;
+
+  varying highp vec3 vLighting;
+  varying lowp vec4 vColor;
+
+  void main(void) {
+    gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+    vColor = aVertexColor;
+
+    // Apply lighting effect
+
+    highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
+    highp vec3 directionalLightColor = vec3(1, 1, 1);
+    highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
+
+    highp vec4 transformedNormal = uNormalMatrix * vec4(aVertexNormal, 1.0);
+
+    highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
+    vLighting = ambientLight + (directionalLightColor * directional);
+  }
+`;
+
+  // Fragment shader program
+  const fsSource = `
+  varying highp vec3 vLighting;
+  varying lowp vec4 vColor;
+
+  uniform sampler2D uSampler;
+
+  void main(void) {
+    gl_FragColor = vec4(vColor.rgb * vLighting, vColor.a);
+  }
+`;
+
   var cubeRotation = 0.0;
 
   function drawScene(gl, programInfo, buffers, deltaTime) {
@@ -111,12 +153,10 @@
     // Clear the canvas before we start drawing on it.
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    // Create a perspective matrix, a special matrix that is
-    // used to simulate the distortion of perspective in a camera.
-    // Our field of view is 45 degrees, with a width/height
-    // ratio that matches the display size of the canvas
-    // and we only want to see objects between 0.1 units
-    // and 100 units away from the camera.
+    // Create a perspective matrix to simulate the distortion of perspective in a
+    // camera. Our field of view is 45 degrees, with a width/height ratio that
+    // matches the display size of the canvas and we only want to see objects
+    // between 0.1 units and 100 units away from the camera.
     const fieldOfView = 45 * Math.PI / 180;   // in radians
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const zNear = 0.1;
@@ -150,11 +190,11 @@
                 [0, 1, 0]);             // axis to rotate around (X)
 
     // Deliver normal matrix to shader
-    // const normalMatrix = mat4.create();
-    // mat4.invert(normalMatrix,
-    //             modelViewMatrix);
-    // mat4.transpose(normalMatrix,
-    //                normalMatrix);
+    const normalMatrix = mat4.create();
+    mat4.invert(normalMatrix,
+                modelViewMatrix);
+    mat4.transpose(normalMatrix,
+                   normalMatrix);
 
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute
@@ -198,23 +238,23 @@
 
     // Tell WebGL how to pull out the normals from
     // the normal buffer into the vertexNormal attribute.
-    // {
-    //   const numComponents = 3;
-    //   const type = gl.FLOAT;
-    //   const normalize = false;
-    //   const stride = 0;
-    //   const offset = 0;
-    //   gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normal);
-    //   gl.vertexAttribPointer(
-    //       programInfo.attribLocations.vertexNormal,
-    //       numComponents,
-    //       type,
-    //       normalize,
-    //       stride,
-    //       offset);
-    //   gl.enableVertexAttribArray(
-    //       programInfo.attribLocations.vertexNormal);
-    // }
+    {
+      const numComponents = 3;
+      const type = gl.FLOAT;
+      const normalize = false;
+      const stride = 0;
+      const offset = 0;
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normal);
+      gl.vertexAttribPointer(
+          programInfo.attribLocations.vertexNormal,
+          numComponents,
+          type,
+          normalize,
+          stride,
+          offset);
+      gl.enableVertexAttribArray(
+          programInfo.attribLocations.vertexNormal);
+    }
 
     // Tell WebGL which indices to use to index the vertices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
@@ -231,10 +271,10 @@
         programInfo.uniformLocations.modelViewMatrix,
         false,
         modelViewMatrix);
-    // gl.uniformMatrix4fv(
-    //     programInfo.uniformLocations.normalMatrix,
-    //     false,
-    //     normalMatrix);
+    gl.uniformMatrix4fv(
+        programInfo.uniformLocations.normalMatrix,
+        false,
+        normalMatrix);
 
     {
       const vertexCount = 36;
@@ -339,27 +379,6 @@
       return;
     }
 
-    // Vertex shader program
-    const vsSource = `
-    attribute vec4 aVertexPosition;
-    attribute vec4 aVertexColor;
-    uniform mat4 uModelViewMatrix;
-    uniform mat4 uProjectionMatrix;
-    varying lowp vec4 vColor;
-    void main(void) {
-      gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-      vColor = aVertexColor;
-    }
-  `;
-
-    // Fragment shader program
-    const fsSource = `
-    varying lowp vec4 vColor;
-    void main(void) {
-      gl_FragColor = vColor;
-    }
-  `;
-
     // Initialize a shader program; this is where all the lighting
     // for the vertices and so forth is established.
     const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
@@ -372,16 +391,17 @@
       program: shaderProgram,
       attribLocations: {
         vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+        vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
         vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
       },
       uniformLocations: {
         projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
         modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+        normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
+        uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
       },
     };
 
-    // Here's where we call the routine that builds all the
-    // objects we'll be drawing.
     const buffers = initBuffers(gl);
 
     var then = 0;
@@ -391,9 +411,7 @@
       now *= 0.001;  // convert to seconds
       const deltaTime = now - then;
       then = now;
-
       drawScene(gl, programInfo, buffers, deltaTime);
-
       requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
