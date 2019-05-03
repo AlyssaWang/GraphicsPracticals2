@@ -150,7 +150,7 @@
     gl.enable(gl.DEPTH_TEST);           // Enable depth testing
     gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
 
-    // Clear the canvas before we start drawing on it.
+    // Clear the canvas
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // Create a perspective matrix to simulate the distortion of perspective in a
@@ -171,22 +171,24 @@
                      zNear,
                      zFar);
 
-    // Set the drawing position to the "identity" point, which is
-    // the center of the scene.
+    // Set the drawing position to the "identity" point (center of the scene)
     const modelViewMatrix = mat4.create();
 
-    // Now move the drawing position a bit to where we want to
-    // start drawing the square.
+    // Now move the drawing position to where we want to start.
     mat4.translate(modelViewMatrix,     // destination matrix
                    modelViewMatrix,     // matrix to translate
                    [-0.0, 0.0, -6.0]);  // amount to translate
-    mat4.rotate(modelViewMatrix,        // destination matrix
-                modelViewMatrix,        // matrix to rotate
+    mat4.rotate(modelViewMatrix,
+                modelViewMatrix,
                 cubeRotation,           // amount to rotate in radians
                 [0, 0, 1]);             // axis to rotate around (Z)
-    mat4.rotate(modelViewMatrix,        // destination matrix
-                modelViewMatrix,        // matrix to rotate
-                cubeRotation * .7,      // amount to rotate in radians
+    mat4.rotate(modelViewMatrix,
+                modelViewMatrix,
+                cubeRotation * .3,
+                [0, 1, 0]);             // axis to rotate around (Y)
+    mat4.rotate(modelViewMatrix,
+                modelViewMatrix,
+                cubeRotation * .7,
                 [0, 1, 0]);             // axis to rotate around (X)
 
     // Deliver normal matrix to shader
@@ -367,6 +369,8 @@
     return shaderProgram;
   }
 
+  // Importing constants and functions
+
   main();
 
   function main() {
@@ -406,7 +410,6 @@
 
     var then = 0;
 
-    // Draw the scene repeatedly
     function render(now) {
       now *= 0.001;  // convert to seconds
       const deltaTime = now - then;
