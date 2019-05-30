@@ -8,7 +8,10 @@ import {vsSource, fsSource} from './shaderPrograms.js';
 
 import {drawScene} from './drawScene.js';
 import {initBuffers} from './initBuffers.js';
+import {initModels} from './initModels.js';
 import {initShaderProgram} from './initShaderProgram.js';
+import {loadJSON} from './loadJSON.js'; //*****
+
 
 main();
 
@@ -22,39 +25,44 @@ function main() {
     return;
   }
 
-  // Initialize a shader program; this is where all the lighting
-  // for the vertices and so forth is established.
-  const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+  initModels(canvas, gl, "../models/gem.json");
+  // initModels(canvas, gl, "../models/cube.json");
 
-  // Collect all the info needed to use the shader program.
-  // Look up which attributes our shader program is using
-  // for aVertexPosition, aVevrtexColor and also
-  // look up uniform locations.
-  const programInfo = {
-    program: shaderProgram,
-    attribLocations: {
-      vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-      vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
-      vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
-    },
-    uniformLocations: {
-      projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-      modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
-      normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
-      uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
-    },
-  };
-
-  const buffers = initBuffers(gl);
-
-  var then = 0;
-
-  function render(now) {
-    now *= 0.001;  // convert to seconds
-    const deltaTime = now - then;
-    then = now;
-    drawScene(gl, programInfo, buffers, deltaTime);
-    requestAnimationFrame(render);
-  }
-  requestAnimationFrame(render);
+  // loadJSON(gl, "../models/gem.json");
+  //
+  // // Initialize a shader program; this is where all the lighting
+  // // for the vertices and so forth is established.
+  // const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+  //
+  // // Collect all the info needed to use the shader program.
+  // // Look up which attributes our shader program is using
+  // // for aVertexPosition, aVertexColor and also
+  // // look up uniform locations.
+  // const programInfo = {
+  //   program: shaderProgram,
+  //   attribLocations: {
+  //     vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+  //     vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
+  //     vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
+  //   },
+  //   uniformLocations: {
+  //     projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+  //     modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+  //     normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
+  //     uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
+  //   },
+  // };
+  //
+  // const buffers = initBuffers(gl);
+  //
+  // var then = 0;
+  //
+  // function render(now) {
+  //   now *= 0.001;  // convert to seconds
+  //   const deltaTime = now - then;
+  //   then = now;
+  //   drawScene(gl, programInfo, buffers, deltaTime);
+  //   requestAnimationFrame(render);
+  // }
+  // requestAnimationFrame(render);
 }
