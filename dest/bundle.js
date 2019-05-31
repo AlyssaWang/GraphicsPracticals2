@@ -3,52 +3,33 @@
 
   // Positions
 
-  // Vertex shader program
+  const vertexShaderText = `
+  precision mediump float;
 
-  // Redo?? Lots of error handling
+  attribute vec3 vertPosition;
+  uniform mat4 mWorld;
+  uniform mat4 mView;
+  uniform mat4 mProj;
 
+  void main()
+  {
+    gl_Position = mProj * mView * mWorld * vec4(vertPosition, 1.0);
+  }
+`;
 
-  // // Load a text resource from a file over the network
-  // export function loadTextResource(url, callback) {
-  // 	var request = new XMLHttpRequest();
-  // 	request.open('GET', url + '?please-dont-cache=' + Math.random(), true);
-  // 	request.onload = function () {
-  // 		if (request.status < 200 || request.status > 299) {
-  // 			callback('Error: HTTP Status ' + request.status + ' on resource ' + url);
-  // 		} else {
-  // 			callback(null, request.responseText);
-  // 		}
-  // 	};
-  // 	request.send();
-  // }
-  //
-  // export function loadImage(url, callback) {
-  // 	var image = new Image();
-  // 	image.onload = function () {
-  // 		callback(null, image);
-  // 	};
-  // 	image.src = url;
-  // }
-  //
-  // export function loadJSONResource(url, callback) {
-  // 	loadTextResource(url, function (err, result) {
-  // 		if (err) {
-  // 			callback(err);
-  // 		} else {
-  // 			try {
-  // 				callback(null, JSON.parse(result));
-  // 			} catch (e) {
-  // 				callback(e);
-  // 			}
-  // 		}
-  // 	});
-  // }
+  const fragmentShaderText = `
+  void main()
+  {
+    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+  }
+`;
 
-  function initModels(canvas, gl, url) {
+  function initModel(canvas, gl, url) {
     var request = new XMLHttpRequest();
     request.open("GET", url);
     request.onreadystatechange = function () {
       if (request.readyState == 4) {
+        console.log(JSON.parse(request.responseText));
         runModels(canvas, gl, JSON.parse(request.responseText));
       }
   	};
@@ -56,48 +37,11 @@
   }
 
   function runModels(canvas, gl, model) {
-  	gl.clearColor(0.75, 0.85, 0.8, 1.0);
-  	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  	gl.enable(gl.DEPTH_TEST);
-  	gl.enable(gl.CULL_FACE);
-  	gl.frontFace(gl.CCW);
-  	gl.cullFace(gl.BACK);
-
   	//
   	// Create shaders
   	//
   	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
   	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-
-    const vertexShaderText = `
-    precision mediump float;
-
-    attribute vec3 vertPosition;
-    attribute vec2 vertTexCoord;
-    varying vec2 fragTexCoord;
-    uniform mat4 mWorld;
-    uniform mat4 mView;
-    uniform mat4 mProj;
-
-    void main()
-    {
-      // fragTexCoord = vertTexCoord;
-      gl_Position = mProj * mView * mWorld * vec4(vertPosition, 1.0);
-    }
-  `;
-
-    const fragmentShaderText = `
-    precision mediump float;
-
-    varying vec2 fragTexCoord;
-    uniform sampler2D sampler;
-
-    void main()
-    {
-      gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-      // gl_FragColor = texture2D(sampler, fragTexCoord);
-    }
-  `;
 
   	gl.shaderSource(vertexShader, vertexShaderText);
   	gl.shaderSource(fragmentShader, fragmentShaderText);
@@ -135,15 +79,10 @@
   	//
   	var vertices = model.meshes[0].vertices;
   	var indices = [].concat.apply([], model.meshes[0].faces);
-  	// var texCoords = model.meshes[0].texturecoords[0];
 
   	var posVertexBufferObject = gl.createBuffer();
   	gl.bindBuffer(gl.ARRAY_BUFFER, posVertexBufferObject);
   	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-  	// var texCoordVertexBufferObject = gl.createBuffer();
-  	// gl.bindBuffer(gl.ARRAY_BUFFER, texCoordVertexBufferObject);
-  	// gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords), gl.STATIC_DRAW);
 
   	var indexBufferObject = gl.createBuffer();
   	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBufferObject);
@@ -160,35 +99,6 @@
   		0 // Offset from the beginning of a single vertex to this attribute
   	);
   	gl.enableVertexAttribArray(positionAttribLocation);
-
-  	// gl.bindBuffer(gl.ARRAY_BUFFER, texCoordVertexBufferObject);
-  	// var texCoordAttribLocation = gl.getAttribLocation(program, 'vertTexCoord');
-  	// gl.vertexAttribPointer(
-  	// 	texCoordAttribLocation, // Attribute location
-  	// 	2, // Number of elements per attribute
-  	// 	gl.FLOAT, // Type of elements
-  	// 	gl.FALSE,
-  	// 	2 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-  	// 	0
-  	// );
-  	// gl.enableVertexAttribArray(texCoordAttribLocation);
-
-  	//
-  	// Create texture
-  	//
-  	// var texture = gl.createTexture();
-  	// gl.bindTexture(gl.TEXTURE_2D, texture);
-  	// gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-  	// gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  	// gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  	// gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  	// gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  	// gl.texImage2D(
-  	// 	gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
-  	// 	gl.UNSIGNED_BYTE,
-  	// 	image
-  	// );
-  	// gl.bindTexture(gl.TEXTURE_2D, null);
 
   	// Tell OpenGL state machine which program should be active.
   	gl.useProgram(program);
@@ -227,9 +137,6 @@
   		gl.clearColor(0.75, 0.85, 0.8, 1.0);
   		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 
-  		// gl.bindTexture(gl.TEXTURE_2D, texture);
-  		// gl.activeTexture(gl.TEXTURE0);
-
   		gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
 
   		requestAnimationFrame(loop);
@@ -237,42 +144,9 @@
   	requestAnimationFrame(loop);
   }
 
-  // var initModels = function () {
-  // 	loadTextResource('/shader.vs.glsl', function (vsErr, vsText) {
-  // 		if (vsErr) {
-  // 			alert('Fatal error getting vertex shader (see console)');
-  // 			console.error(vsErr);
-  // 		} else {
-  // 			loadTextResource('/shader.fs.glsl', function (fsErr, fsText) {
-  // 				if (fsErr) {
-  // 					alert('Fatal error getting fragment shader (see console)');
-  // 					console.error(fsErr);
-  // 				} else {
-  // 					loadJSONResource('/Susan.json', function (modelErr, modelObj) {
-  // 						if (modelErr) {
-  // 							alert('Fatal error getting Susan model (see console)');
-  // 							console.error(fsErr);
-  // 						} else {
-  // 							loadImage('/SusanTexture.png', function (imgErr, img) {
-  // 								if (imgErr) {
-  // 									alert('Fatal error getting Susan texture (see console)');
-  // 									console.error(imgErr);
-  // 								} else {
-  // 									runModels(vsText, fsText, img, modelObj);
-  // 								}
-  // 							});
-  // 						}
-  // 					});
-  // 				}
-  // 			});
-  // 		}
-  // 	});
-  // };
-
   // Creates a shader of the given type, uploads the source and
 
   // Importing constants and functions
-
 
   main();
 
@@ -286,18 +160,34 @@
       return;
     }
 
-    initModels(canvas, gl, "../models/gem.json");
-    // initModels(canvas, gl, "../models/cube.json");
+    gl.clearColor(0.75, 0.85, 0.8, 1.0);
+    gl.clearDepth(1.0);
+  	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  	gl.enable(gl.DEPTH_TEST);
+  	gl.enable(gl.CULL_FACE);
+    gl.depthFunc(gl.LEQUAL);
+  	gl.frontFace(gl.CCW);
+  	gl.cullFace(gl.BACK);
 
-    // loadJSON(gl, "../models/gem.json");
-    //
+
+    var urls = ["../models/gem.json",
+                "../models/cube.json"];
+
+    // "../models/cat.json"
+
+    for (var i = 0; i < urls.length; i++) {
+      var url = urls[i];
+      console.log(url);
+      initModel(canvas, gl, url);
+    }
+
     // // Initialize a shader program; this is where all the lighting
     // // for the vertices and so forth is established.
     // const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
     //
     // // Collect all the info needed to use the shader program.
     // // Look up which attributes our shader program is using
-    // // for aVertexPosition, aVevrtexColor and also
+    // // for aVertexPosition, aVertexColor and also
     // // look up uniform locations.
     // const programInfo = {
     //   program: shaderProgram,

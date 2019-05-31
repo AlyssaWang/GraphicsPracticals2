@@ -4,14 +4,10 @@ import {positions,
         indices,
         vertexNormals} from './constants.js';
 
-import {vsSource, fsSource} from './shaderPrograms.js';
-
 import {drawScene} from './drawScene.js';
 import {initBuffers} from './initBuffers.js';
-import {initModels} from './initModels.js';
+import {initModel} from './initModel.js';
 import {initShaderProgram} from './initShaderProgram.js';
-import {loadJSON} from './loadJSON.js'; //*****
-
 
 main();
 
@@ -25,11 +21,27 @@ function main() {
     return;
   }
 
-  initModels(canvas, gl, "../models/gem.json");
-  // initModels(canvas, gl, "../models/cube.json");
+  gl.clearColor(0.75, 0.85, 0.8, 1.0);
+  gl.clearDepth(1.0);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	gl.enable(gl.DEPTH_TEST);
+	gl.enable(gl.CULL_FACE);
+  gl.depthFunc(gl.LEQUAL);
+	gl.frontFace(gl.CCW);
+	gl.cullFace(gl.BACK);
 
-  // loadJSON(gl, "../models/gem.json");
-  //
+
+  var urls = ["../models/gem.json",
+              "../models/cube.json"];
+
+  // "../models/cat.json"
+
+  for (var i = 0; i < urls.length; i++) {
+    var url = urls[i];
+    console.log(url);
+    initModel(canvas, gl, url);
+  }
+
   // // Initialize a shader program; this is where all the lighting
   // // for the vertices and so forth is established.
   // const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
