@@ -1,14 +1,5 @@
-// Importing constants and functions
-import {positions,
-        faceColors,
-        indices,
-        vertexNormals} from './constants.js';
-
-import {drawScene} from './drawScene.js';
-import {initBuffers} from './initBuffers.js';
 import {initModel} from './initModel.js';
 import {initScene} from './initScene.js';
-import {initShaderProgram} from './initShaderProgram.js';
 
 main();
 
@@ -18,10 +9,11 @@ function main() {
 
   initScene(gl);
 
-  var urls = ["../models/gem.json",
-              "../models/cube.json"];
-
-  // "../models/cat.json"
+  var urls = [
+              "../models/lotus_OBJ_high.json",
+              "../models/gem.json",
+              "../models/cube.json"
+             ];
 
   for (var i = 0; i < urls.length; i++) {
     var url = urls[i];
@@ -51,15 +43,8 @@ function main() {
   //   },
   // };
   //
-  // const buffers = initBuffers(gl);
-  //
-  // var then = 0;
-  //
   // function render(now) {
-  //   now *= 0.001;  // convert to seconds
-  //   const deltaTime = now - then;
-  //   then = now;
-  //   drawScene(gl, programInfo, buffers, deltaTime);
+  //   drawScene(gl, programInfo, buffers);
   //   requestAnimationFrame(render);
   // }
   // requestAnimationFrame(render);
