@@ -7,6 +7,7 @@ import {positions,
 import {drawScene} from './drawScene.js';
 import {initBuffers} from './initBuffers.js';
 import {initModel} from './initModel.js';
+import {initScene} from './initScene.js';
 import {initShaderProgram} from './initShaderProgram.js';
 
 main();
@@ -15,21 +16,7 @@ function main() {
   const canvas = document.querySelector('#glCanvas');
   const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
-  // Error handling
-  if (!gl) {
-    alert('Unable to initialize WebGL. Your browser or machine may not support it.');
-    return;
-  }
-
-  gl.clearColor(0.75, 0.85, 0.8, 1.0);
-  gl.clearDepth(1.0);
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	gl.enable(gl.DEPTH_TEST);
-	gl.enable(gl.CULL_FACE);
-  gl.depthFunc(gl.LEQUAL);
-	gl.frontFace(gl.CCW);
-	gl.cullFace(gl.BACK);
-
+  initScene(gl);
 
   var urls = ["../models/gem.json",
               "../models/cube.json"];
@@ -38,7 +25,6 @@ function main() {
 
   for (var i = 0; i < urls.length; i++) {
     var url = urls[i];
-    console.log(url);
     initModel(canvas, gl, url);
   }
 

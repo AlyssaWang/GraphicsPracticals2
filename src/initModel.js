@@ -1,12 +1,14 @@
 import {vertexShaderText,
         fragmentShaderText} from './shaderPrograms.js';
 
+import {initBuffers} from './initBuffers.js';
+import {initShaderProgram} from './initShaderProgram.js';
+
 export function initModel(canvas, gl, url) {
   var request = new XMLHttpRequest();
   request.open("GET", url);
   request.onreadystatechange = function () {
     if (request.readyState == 4) {
-      console.log(JSON.parse(request.responseText));
       runModels(canvas, gl, JSON.parse(request.responseText));
     }
 	}
@@ -14,40 +16,9 @@ export function initModel(canvas, gl, url) {
 }
 
 function runModels(canvas, gl, model) {
-	//
-	// Create shaders
-	//
-	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+  var program = initShaderProgram(gl, vertexShaderText, fragmentShaderText);
 
-	gl.shaderSource(vertexShader, vertexShaderText);
-	gl.shaderSource(fragmentShader, fragmentShaderText);
-
-	gl.compileShader(vertexShader);
-	if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-		console.error('ERROR compiling vertex shader!', gl.getShaderInfoLog(vertexShader));
-		return;
-	}
-
-	gl.compileShader(fragmentShader);
-	if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-		console.error('ERROR compiling fragment shader!', gl.getShaderInfoLog(fragmentShader));
-		return;
-	}
-
-	var program = gl.createProgram();
-	gl.attachShader(program, vertexShader);
-	gl.attachShader(program, fragmentShader);
-	gl.linkProgram(program);
-	if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-		console.error('ERROR linking program!', gl.getProgramInfoLog(program));
-		return;
-	}
-	gl.validateProgram(program);
-	if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
-		console.error('ERROR validating program!', gl.getProgramInfoLog(program));
-		return;
-	}
+  initBuffers(gl, model);
 
 	//
 	// Create buffer
@@ -107,9 +78,10 @@ function runModels(canvas, gl, model) {
 		mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
 		mat4.rotate(xRotationMatrix, identityMatrix, angle / 4, [1, 0, 0]);
 		mat4.mul(worldMatrix, yRotationMatrix, xRotationMatrix);
+
 		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
 
-		gl.clearColor(0.75, 0.85, 0.8, 1.0);
+    gl.clearColor(0, 0, 0, 1.0);
 		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 
 		gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);

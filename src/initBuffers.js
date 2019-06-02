@@ -3,7 +3,7 @@ import {positions,
         indices,
         vertexNormals} from './constants.js';
 
-export function initBuffers(gl) {
+export function initBuffers(gl, model) {
 
   const positionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
