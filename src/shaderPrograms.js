@@ -1,41 +1,27 @@
-// Vertex shader program
-export const vsSource = `
-  attribute vec4 aVertexPosition;
-  attribute vec4 aVertexColor;
-  attribute vec3 aVertexNormal;
+export const vertexShaderText = `
+  precision mediump float;
 
-  uniform mat4 uNormalMatrix;
-  uniform mat4 uModelViewMatrix;
-  uniform mat4 uProjectionMatrix;
+  attribute vec3 vertPosition;
+  uniform mat4 mWorld;
+  uniform mat4 mView;
+  uniform mat4 mProj;
 
-  varying highp vec3 vLighting;
-  varying lowp vec4 vColor;
+  attribute vec2 aTexture;
+  varying highp vec2 vTexture;
 
-  void main(void) {
-    gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-    vColor = aVertexColor;
-
-    // Apply lighting effect
-
-    highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
-    highp vec3 directionalLightColor = vec3(1, 1, 1);
-    highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
-
-    highp vec4 transformedNormal = uNormalMatrix * vec4(aVertexNormal, 1.0);
-
-    highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
-    vLighting = ambientLight + (directionalLightColor * directional);
+  void main()
+  {
+    gl_Position = mProj * mView * mWorld * vec4(vertPosition, 1.0);
+    vTexture = aTexture;
   }
-`;
+`
 
-// Fragment shader program
-export const fsSource = `
-  varying highp vec3 vLighting;
-  varying lowp vec4 vColor;
-
+export const fragmentShaderText = `
+  varying highp vec2 vTexture;
   uniform sampler2D uSampler;
 
   void main(void) {
-    gl_FragColor = vec4(vColor.rgb * vLighting, vColor.a);
+    gl_FragColor = texture2D(uSampler, vTexture);
+    // gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
   }
-`;
+`
