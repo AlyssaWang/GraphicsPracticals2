@@ -296,6 +296,8 @@
       gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 
       gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, 0);
+      gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, 0);
+      gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, 0);
 
       requestAnimationFrame(render);
     };
@@ -318,7 +320,7 @@
 
     var textureUrls = [
       // "../models/green.png",
-      "../models/cube.png",
+      "../models/squares.png",
     ];
 
     if (modelUrls.length = textureUrls.length) {

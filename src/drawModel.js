@@ -40,10 +40,10 @@ function parseModel(canvas, gl, model, textureUrl) {
 
 	gl.useProgram(programInfo.program);
 
-  drawObject(canvas, gl, object, programInfo);
+  drawModel(canvas, gl, object, programInfo);
 }
 
-function drawObject(canvas, gl, object, programInfo) {
+function drawModel(canvas, gl, object, programInfo) {
   var worldMatrix = new Float32Array(16);
   var viewMatrix = new Float32Array(16);
   var projMatrix = new Float32Array(16);

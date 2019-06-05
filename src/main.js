@@ -17,7 +17,7 @@ function main() {
 
   var textureUrls = [
     // "../models/green.png",
-    "../models/cube.png",
+    "../models/squares.png",
   ];
 
   if (modelUrls.length = textureUrls.length) {
