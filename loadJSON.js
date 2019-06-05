@@ -21,8 +21,6 @@ function Model() {
 }
 
 function handleLoadedModel(gl, m, object) {
-	console.log("handleLoadedModel");
-
 	var positionArray = new Float32Array(object.meshes[0].vertices);
 	m.vbo[0] = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, m.vbo[0]);

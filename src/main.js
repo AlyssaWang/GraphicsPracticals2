@@ -1,5 +1,5 @@
-import {initModel} from './initModel.js';
 import {initScene} from './initScene.js';
+import {initModel} from './drawModel.js';
 
 main();
 
@@ -9,43 +9,22 @@ function main() {
 
   initScene(gl);
 
-  var urls = [
-              "../models/lotus_OBJ_high.json",
-              "../models/gem.json",
-              "../models/cube.json"
-             ];
+  var modelUrls = [
+    // "../models/lotus_OBJ_high.json",
+    "../models/gem.json",
+    // "../models/cube.json"
+  ];
 
-  for (var i = 0; i < urls.length; i++) {
-    var url = urls[i];
-    initModel(canvas, gl, url);
+  var textureUrls = [
+    // "../models/green.png",
+    "../models/cube.png",
+  ];
+
+  if (modelUrls.length = textureUrls.length) {
+    for (var i = 0; i < modelUrls.length; i++) {
+      var modelUrl = modelUrls[i];
+      var textureUrl = textureUrls[i];
+      initModel(canvas, gl, modelUrl, textureUrls);
+    }
   }
-
-  // // Initialize a shader program; this is where all the lighting
-  // // for the vertices and so forth is established.
-  // const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
-  //
-  // // Collect all the info needed to use the shader program.
-  // // Look up which attributes our shader program is using
-  // // for aVertexPosition, aVertexColor and also
-  // // look up uniform locations.
-  // const programInfo = {
-  //   program: shaderProgram,
-  //   attribLocations: {
-  //     vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-  //     vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
-  //     vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
-  //   },
-  //   uniformLocations: {
-  //     projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-  //     modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
-  //     normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
-  //     uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
-  //   },
-  // };
-  //
-  // function render(now) {
-  //   drawScene(gl, programInfo, buffers);
-  //   requestAnimationFrame(render);
-  // }
-  // requestAnimationFrame(render);
 }
