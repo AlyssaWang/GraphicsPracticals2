@@ -1,5 +1,5 @@
 import {initScene} from './initScene.js';
-import {initModel} from './drawModel.js';
+import {initModel} from './initModel.js';
 
 main();
 
