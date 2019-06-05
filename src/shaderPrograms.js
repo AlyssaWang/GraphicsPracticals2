@@ -22,6 +22,5 @@ export const fragmentShaderText = `
 
   void main(void) {
     gl_FragColor = texture2D(uSampler, vTexture);
-    // gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
   }
 `

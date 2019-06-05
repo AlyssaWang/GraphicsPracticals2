@@ -1,6 +1,6 @@
+// https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
 // Initialize a texture and load an image.
 // When the image finished loading copy it into the texture.
-// https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
 
 export function loadTexture(gl, url) {
   const texture = gl.createTexture();
