@@ -318,7 +318,6 @@
     var object = {
       buffers: initBuffers(gl, programInfo.program, model),
       indices: [].concat.apply([], model.meshes[0].faces),
-      normals: model.meshes[0].normals,
       texture: loadTexture(gl, textureUrl),
     };
 
