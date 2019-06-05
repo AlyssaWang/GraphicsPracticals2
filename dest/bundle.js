@@ -62,7 +62,6 @@
 
   void main(void) {
     gl_FragColor = texture2D(uSampler, vTexture);
-    // gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
   }
 `;
 
@@ -158,9 +157,9 @@
     return shaderProgram;
   }
 
+  // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
   // Initialize a texture and load an image.
   // When the image finished loading copy it into the texture.
-  // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
 
   function loadTexture(gl, url) {
     const texture = gl.createTexture();
@@ -247,10 +246,10 @@
 
   	gl.useProgram(programInfo.program);
 
-    drawObject(canvas, gl, object, programInfo);
+    drawModel(canvas, gl, object, programInfo);
   }
 
-  function drawObject(canvas, gl, object, programInfo) {
+  function drawModel(canvas, gl, object, programInfo) {
     var worldMatrix = new Float32Array(16);
     var viewMatrix = new Float32Array(16);
     var projMatrix = new Float32Array(16);
@@ -295,8 +294,6 @@
       gl.clearColor(0, 0, 0, 1.0);
       gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 
-      gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, 0);
-      gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, 0);
       gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, 0);
 
       requestAnimationFrame(render);

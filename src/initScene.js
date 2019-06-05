@@ -32,5 +32,3 @@ export function initScene(gl) {
                    zNear,
                    zFar);
 }
-
-// gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
