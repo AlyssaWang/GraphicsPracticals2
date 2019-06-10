@@ -1,11 +1,11 @@
-import {vertexShaderText,
-        fragmentShaderText} from './shaderPrograms.js';
-
+import {drawModel} from './drawModel.js';  
 import {initBuffers} from './initBuffers.js';
 import {initShaderProgram} from './initShaderProgram.js';
 import {loadTexture} from './loadTexture.js';
-import {drawModel} from './drawModel.js';
+import {vertexShaderText,
+        fragmentShaderText} from './shaderPrograms.js';
 
+// Opens an XMLHttpRequest to parse a JSON file. Sends to parseModel().
 export function initModel(canvas, gl, modelUrl, textureUrl) {
   var request = new XMLHttpRequest();
   request.open("GET", modelUrl);
@@ -17,6 +17,8 @@ export function initModel(canvas, gl, modelUrl, textureUrl) {
 	request.send();
 }
 
+// Creates shaders, buffers, uniform locations, and textures.
+// Sends all of the above to drawModel().
 function parseModel(canvas, gl, model, textureUrl) {
   var shaderProgram = initShaderProgram(gl, vertexShaderText, fragmentShaderText);
   var programInfo = {
@@ -29,14 +31,12 @@ function parseModel(canvas, gl, model, textureUrl) {
       uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
     },
   };
-
   var object = {
-    buffers: initBuffers(gl, programInfo.program, model),
     indices: [].concat.apply([], model.meshes[0].faces),
     texture: loadTexture(gl, textureUrl),
   };
 
+  initBuffers(gl, programInfo.program, model);
 	gl.useProgram(programInfo.program);
-
   drawModel(canvas, gl, object, programInfo);
 }

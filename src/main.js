@@ -1,5 +1,7 @@
-import {initScene} from './initScene.js';
+import {cameraParams} from './cameraParams.js';
+import {initCamera} from './initCamera.js';
 import {initModel} from './initModel.js';
+import {initScene} from './initScene.js';
 
 main();
 
@@ -8,6 +10,7 @@ function main() {
   const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
   initScene(gl);
+  initCamera(canvas, cameraParams);
 
   var modelUrls = [
     // "../models/lotus_OBJ_high.json",
