@@ -133,25 +133,25 @@
 
   // Transforms the scene as per camera movements.
   function moveCamera(params) {
-  	// Translation
-  	mat4.translate(params.translationMatrix, params.identityMatrix,
-  		[-params.trackLeftRight, -params.craneUpDown, params.pushInPullOut]);
-
   	// Rotation
   	mat4.rotate(params.xRotationMatrix, params.identityMatrix, params.pitchAngle, [1, 0, 0]);
   	mat4.rotate(params.yRotationMatrix, params.identityMatrix, params.yawAngle, [0, 1, 0]);
   	mat4.rotate(params.zRotationMatrix, params.identityMatrix, params.rollAngle, [0, 0, 1]);
+
+  	// Translation
+  	mat4.translate(params.translationMatrix, params.identityMatrix,
+  		[-params.trackLeftRight, -params.craneUpDown, params.pushInPullOut]);
   }
 
   // Applies camera transformations to the scene.
   function applyCamera(params, worldMatrix) {
-  	// Translation
-  	mat4.mul(worldMatrix, params.translationMatrix, worldMatrix);
-
   	// Rotation
   	mat4.mul(worldMatrix, params.xRotationMatrix, worldMatrix);
   	mat4.mul(worldMatrix, params.yRotationMatrix, worldMatrix);
   	mat4.mul(worldMatrix, params.zRotationMatrix, worldMatrix);
+
+  	// Translation
+  	mat4.mul(worldMatrix, params.translationMatrix, worldMatrix);
   }
 
   function drawModel(canvas, gl, object, programInfo) {
