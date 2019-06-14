@@ -59,12 +59,10 @@ export function drawModel(canvas, gl, object, programInfo) {
     angle = performance.now() / 1000 / 6 * 2 * Math.PI;
     mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
     mat4.rotate(xRotationMatrix, identityMatrix, angle / 4, [1, 0, 0]);
-
     moveCamera(cameraParams);
 
     // Transformations
     mat4.mul(worldMatrix, yRotationMatrix, xRotationMatrix);
-
     applyCamera(cameraParams, worldMatrix);
 
     gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, 0);

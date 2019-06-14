@@ -1,6 +1,6 @@
 // Modified from https://sites.google.com/site/csc8820/educational/move-a-camera
 
-// Registers key presses to camera movements.
+// Registers key presses and mouse movements to camera movements.
 export function initCamera(canvas, params) {
 	// Keyboard controls
 	document.onkeydown = function(event) {
