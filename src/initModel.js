@@ -1,4 +1,4 @@
-import {drawModel} from './drawModel.js';  
+import {drawModel} from './drawModel.js';
 import {initBuffers} from './initBuffers.js';
 import {initShaderProgram} from './initShaderProgram.js';
 import {loadTexture} from './loadTexture.js';

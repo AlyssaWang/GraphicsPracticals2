@@ -12,10 +12,11 @@ function main() {
   initScene(gl);
   initCamera(canvas, cameraParams);
 
+  // Currently unable to load more than one model at a time.
   var modelUrls = [
-    // "../models/lotus_OBJ_high.json",
-    "../models/gem.json",
     // "../models/cube.json"
+    "../models/gem.json",
+    // "../models/lotus_OBJ_high.json",
   ];
 
   var textureUrls = [

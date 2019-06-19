@@ -1,6 +1,6 @@
 // Creates buffers for positions, indices, normals, and textures.
 export function initBuffers(gl, program, model) {
-	var vertices = model.meshes[0].vertices; // will have to update for lotus
+	var vertices = model.meshes[0].vertices;
 	var indices = [].concat.apply([], model.meshes[0].faces);
   var normals = model.meshes[0].normals;
 

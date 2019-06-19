@@ -37,6 +37,10 @@ export function drawModel(canvas, gl, object, programInfo) {
   mat4.identity(identityMatrix);
 
   // Transformations
+  var translationMatrix = new Float32Array(16);
+  var translation1 = [0, 0, 0];
+  var translation2 = [-40, 0, 0];
+
   var xRotationMatrix = new Float32Array(16);
   var yRotationMatrix = new Float32Array(16);
   var angle = 0;
@@ -49,14 +53,12 @@ export function drawModel(canvas, gl, object, programInfo) {
     gl.uniformMatrix4fv(programInfo.uniformLocations.worldMatrix,
                         gl.FALSE,
                         worldMatrix);
-
-    // Lighting
     gl.uniformMatrix4fv(programInfo.uniformLocations.normalMatrix,
                         gl.FALSE,
                         normalMatrix);
 
     // Transformation parameters
-    angle = performance.now() / 1000 / 6 * 2 * Math.PI;
+    // angle = performance.now() / 1000 / 6 * 2 * Math.PI; // Use only without camera
     mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
     mat4.rotate(xRotationMatrix, identityMatrix, angle / 4, [1, 0, 0]);
     moveCamera(cameraParams);
@@ -65,7 +67,7 @@ export function drawModel(canvas, gl, object, programInfo) {
     mat4.mul(worldMatrix, yRotationMatrix, xRotationMatrix);
     applyCamera(cameraParams, worldMatrix);
 
-    gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, object.indexBufferObject);
 
     requestAnimationFrame(render);
   };

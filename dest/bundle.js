@@ -34,7 +34,7 @@
 
   // Modified from https://sites.google.com/site/csc8820/educational/move-a-camera
 
-  // Registers key presses to camera movements.
+  // Registers key presses and mouse movements to camera movements.
   function initCamera(canvas, params) {
   	// Keyboard controls
   	document.onkeydown = function(event) {
@@ -188,7 +188,6 @@
     var identityMatrix = new Float32Array(16);
     mat4.identity(identityMatrix);
 
-    // Transformations
     var xRotationMatrix = new Float32Array(16);
     var yRotationMatrix = new Float32Array(16);
     var angle = 0;
@@ -201,25 +200,21 @@
       gl.uniformMatrix4fv(programInfo.uniformLocations.worldMatrix,
                           gl.FALSE,
                           worldMatrix);
-
-      // Lighting
       gl.uniformMatrix4fv(programInfo.uniformLocations.normalMatrix,
                           gl.FALSE,
                           normalMatrix);
 
       // Transformation parameters
-      angle = performance.now() / 1000 / 6 * 2 * Math.PI;
+      // angle = performance.now() / 1000 / 6 * 2 * Math.PI; // Use only without camera
       mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
       mat4.rotate(xRotationMatrix, identityMatrix, angle / 4, [1, 0, 0]);
-
       moveCamera(cameraParams);
 
       // Transformations
       mat4.mul(worldMatrix, yRotationMatrix, xRotationMatrix);
-
       applyCamera(cameraParams, worldMatrix);
 
-      gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, 0);
+      gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, object.indexBufferObject);
 
       requestAnimationFrame(render);
     };
@@ -228,7 +223,7 @@
 
   // Creates buffers for positions, indices, normals, and textures.
   function initBuffers(gl, program, model) {
-  	var vertices = model.meshes[0].vertices; // will have to update for lotus
+  	var vertices = model.meshes[0].vertices;
   	var indices = [].concat.apply([], model.meshes[0].faces);
     var normals = model.meshes[0].normals;
 
@@ -393,7 +388,9 @@
     highp vec3 directionalLightColor = vec3(1, 1, 1);
     highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
 
-    highp vec4 transformedNormal = mNorm * mWorld * vec4(aVertexNormal, 1.0);
+    // To apply universal lighting w/o camera:
+    // highp vec4 transformedNormal = mNorm * mWorld * vec4(aVertexNormal, 1.0);
+    highp vec4 transformedNormal = mNorm * vec4(aVertexNormal, 1.0);
 
     highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
     vLighting = ambientLight + (directionalLightColor * directional);
@@ -493,10 +490,11 @@
     initScene(gl);
     initCamera(canvas, cameraParams);
 
+    // Currently unable to load more than one model at a time.
     var modelUrls = [
-      // "../models/lotus_OBJ_high.json",
-      "../models/gem.json",
       // "../models/cube.json"
+      "../models/gem.json",
+      // "../models/lotus_OBJ_high.json",
     ];
 
     var textureUrls = [
